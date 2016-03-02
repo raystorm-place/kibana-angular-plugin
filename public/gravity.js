@@ -15,8 +15,8 @@ define(function (require) {
     // Vis object of this type.
     return new TemplateVisType({
       name: 'gravity',
-      title: 'Gravity Results widget',
-      icon: 'fa-code',
+      title: 'Gravity widget',
+      icon: 'fa-table',
       description: 'Useful for displaying gravity resulsts in dashboards.',
       template: require('plugins/kibana-gravity/gravity.html'),
       params: {

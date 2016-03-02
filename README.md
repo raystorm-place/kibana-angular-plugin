@@ -5,10 +5,12 @@ Gravity integration into kibana
 * kibana (=4.4.1)
 
 # Dev
-Clear plugin cache and restart
+Clear plugin cache, redeploy and restart
 
 ```bash
-rm ./optimize/bundles/kibana.bundle.js
+cd kibana
+rm -rf ./optimize/*
+cp -R ~/tmp/kibana-gravity ./src/plugins/
 bin/kibana
 ```
 
