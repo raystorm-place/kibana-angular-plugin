@@ -4,12 +4,8 @@ define(function (require) {
   require('ui/notify');
 
   var module = require('ui/modules').get('kibana/kibana-gravity', ['kibana']);
-  module.controller('KbnGravityVisController', function ($scope, $sce, $route, config, Private, Notifier) {
-    $scope.hits = 0;
-    $scope.gravities = [];
-    $scope.route = $route;
-
-    var elasticHitToGravity = function(hit) {
+  module.service('gravityHelper', [function () {
+    this.elasticHitToGravity = function(hit) {
       var gravity = {
         id: hit["_id"],
         fields: {}
@@ -21,20 +17,22 @@ define(function (require) {
 
       return gravity;
     };
-
+  }]);
+  module.controller('KbnGravityVisController', function ($scope, $sce, $route, config, Private, Notifier, gravityHelper) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
-    var notify = new Notifier({
-      location: 'Dashboard'
-    });
+    var notify = new Notifier({location: 'Gravity Widget'});
 
-    $scope.searchSource = $route.current.locals.dash.searchSource;
+    $scope.hits = 0;
+    $scope.gravities = [];
+    $scope.route = $route;
     $scope.indexPattern = $scope.vis.indexPattern;
+    $scope.searchSource = $route.current.locals.dash.searchSource;
     $scope.searchSource.set('index', $scope.indexPattern);
     $scope.opts = {
-      query: $scope.searchSource.get('query') || '',
-      sort: getSort.array(["time", "desc"], $scope.indexPattern),
       index: $scope.indexPattern.id,
+      query: $scope.searchSource.get('query') || '',
       filters: _.cloneDeep($scope.searchSource.getOwn('filter')),
+      sort: getSort.array(["time", "desc"], $scope.indexPattern),
       size: 10
     };
 
@@ -44,11 +42,7 @@ define(function (require) {
         $scope.gravities = [];
       }
 
-      if (!$scope.gravities) flushResponseData();
-
       /**
-       * Basically an emum.
-       *
        * opts:
        *   "time" - sorted by the timefield
        *   "non-time" - explicitly sorted by a non-time field, NOT THE SAME AS `sortBy !== "time"`
@@ -78,29 +72,23 @@ define(function (require) {
         $scope.fetchStatus = status;
       });
 
-      segmented.on('first', function () {
-        flushResponseData();
-      });
-
-      segmented.on('segment', notify.timed('handle each segment', function (resp) {
-        if (resp._shards.failed > 0) {
-          $scope.failures = _.union($scope.failures, resp._shards.failures);
+      segmented.on('segment', notify.timed('handle each segment', function (segmentResp) {
+        if (segmentResp._shards.failed > 0) {
+          $scope.failures = _.union($scope.failures, segmentResp._shards.failures);
           $scope.failures = _.uniq($scope.failures, false, function (failure) {
             return failure.index + failure.shard + failure.reason;
           });
         }
       }));
 
-      segmented.on('mergedSegment', function (merged) {
-        $scope.mergedEsResp = merged;
-        $scope.hits = merged.hits.total;
-
-        // the merge rows, use a new array to help watchers
-        var rows = merged.hits.hits.slice();
+      segmented.on('mergedSegment', function (resp) {
+        $scope.hits = resp.hits.total;
         $scope.gravities = [];
+
+        var rows = resp.hits.hits.slice();
         for(var i = 0; i < rows.length; i++) {
           var hit = rows[i];
-          var gravity = elasticHitToGravity(hit);
+          var gravity = gravityHelper.elasticHitToGravity(hit);
           $scope.gravities.push(gravity);
         }
       });
