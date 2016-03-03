@@ -21,8 +21,7 @@ define(function (require) {
       template: require('plugins/kibana-gravity/gravity.html'),
       params: {
         editor: require('plugins/kibana-gravity/gravity_params.html')
-      },
-      requiresSearch: false
+      }
     });
   }
 

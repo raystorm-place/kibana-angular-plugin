@@ -1,6 +1,12 @@
 # Kibana Gravity
 Gravity integration into kibana
 
+# Install
+
+```bash
+cp -R ./raystorm-kibana-html kibana/src/plugins/
+```
+
 # Compatibility
 * kibana (=4.4.1)
 
@@ -14,6 +20,11 @@ cp -R ~/tmp/kibana-gravity ./src/plugins/
 bin/kibana
 ```
 
+## Debug scope
+
+1. Open Firebug
+2. Select HTML
+3. Enter `angular.element($0).scope()` in console
 
 # Reference
 - https://www.timroes.de/2015/12/02/writing-kibana-4-plugins-basics/
