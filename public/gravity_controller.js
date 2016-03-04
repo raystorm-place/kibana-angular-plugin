@@ -18,7 +18,7 @@ define(function (require) {
       return gravity;
     };
   }]);
-  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, $route, Private, Notifier, gravityHelper) {
+  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, $route, Private, Notifier, gravityHelper, savedSearches, AppState) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
     var notify = new Notifier({location: 'Gravity Widget'});
 
@@ -35,6 +35,7 @@ define(function (require) {
     $scope.hits = 0;
     $scope.gravities = [];
     $scope.route = $route;
+    $scope.state = new AppState();
     $scope.currentView =  $route.current.locals.dash != null ? "dashboard" : "edit";
     $scope.indexPattern = $scope.vis.indexPattern;
     $scope.searchSource = $scope.currentView == "dashboard" ?  $route.current.locals.dash.searchSource :
