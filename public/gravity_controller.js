@@ -18,15 +18,20 @@ define(function (require) {
       return gravity;
     };
   }]);
-  module.controller('KbnGravityVisController', function ($scope, $sce, $route, config, Private, Notifier, gravityHelper) {
+  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, $route, Private, Notifier, gravityHelper) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
     var notify = new Notifier({location: 'Gravity Widget'});
 
+    $scope.renderTemplate = function(gravity) {
+      var html = $interpolate('<img src="{{gravity.fields.image}}" width="120" /> {{gravity.id}}')({gravity: gravity});
+      return $sce.trustAsHtml(html);
+    };
     $scope.hits = 0;
     $scope.gravities = [];
     $scope.route = $route;
     $scope.indexPattern = $scope.vis.indexPattern;
-    $scope.searchSource = $route.current.locals.dash.searchSource;
+    $scope.searchSource = $route.current.locals.dash != null ?  $route.current.locals.dash.searchSource :
+                                                                $route.current.locals.savedVis.searchSource;
     $scope.searchSource.set('index', $scope.indexPattern);
     $scope.opts = {
       index: $scope.indexPattern.id,

@@ -1,7 +1,7 @@
 <div ng-controller="KbnGravityVisController" class="gravity-vis">
     <div>
         <div ng-repeat="gravity in gravities">
-            {{gravity.id}}
+            <div ng-bind-html="renderTemplate(gravity)"></div>
         </div>
     </div>
 </div>
