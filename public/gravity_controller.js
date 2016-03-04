@@ -22,10 +22,16 @@ define(function (require) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
     var notify = new Notifier({location: 'Gravity Widget'});
 
+    $scope.html = '<img src="{{gravity.fields.image}}" width="120" /> {{gravity.id}}';
     $scope.renderTemplate = function(gravity) {
-      var html = $interpolate('<img src="{{gravity.fields.image}}" width="120" /> {{gravity.id}}')({gravity: gravity});
+      var html = $interpolate($scope.html)({gravity: gravity});
       return $sce.trustAsHtml(html);
     };
+    $scope.$watch('vis.params.html', function (html) {
+      if (!html) return;
+      $scope.html = $sce.trustAsHtml(html);
+    });
+
     $scope.hits = 0;
     $scope.gravities = [];
     $scope.route = $route;
