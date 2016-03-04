@@ -29,7 +29,7 @@ define(function (require) {
     };
     $scope.$watch('vis.params.html', function (html) {
       if (!html) return;
-      $scope.html = $sce.trustAsHtml(html);
+      $scope.html = html;
     });
 
     $scope.hits = 0;
@@ -115,6 +115,6 @@ define(function (require) {
         });
       }).catch(notify.fatal);
     }
-    
+
   });
 });
