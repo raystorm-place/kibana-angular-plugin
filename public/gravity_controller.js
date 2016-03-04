@@ -35,8 +35,9 @@ define(function (require) {
     $scope.hits = 0;
     $scope.gravities = [];
     $scope.route = $route;
+    $scope.currentView =  $route.current.locals.dash != null ? "dashboard" : "edit";
     $scope.indexPattern = $scope.vis.indexPattern;
-    $scope.searchSource = $route.current.locals.dash != null ?  $route.current.locals.dash.searchSource :
+    $scope.searchSource = $scope.currentView == "dashboard" ?  $route.current.locals.dash.searchSource :
                                                                 $route.current.locals.savedVis.searchSource;
     $scope.searchSource.set('index', $scope.indexPattern);
     $scope.opts = {
@@ -47,71 +48,73 @@ define(function (require) {
       size: 10
     };
 
-    $scope.searchSource.onBeginSegmentedFetch(function (segmented) {
-      function flushResponseData() {
-        $scope.hits = 0;
-        $scope.gravities = [];
-      }
-
-      /**
-       * opts:
-       *   "time" - sorted by the timefield
-       *   "non-time" - explicitly sorted by a non-time field, NOT THE SAME AS `sortBy !== "time"`
-       *   "implicit" - no sorting set, NOT THE SAME AS "non-time"
-       *
-       * @type {String}
-       */
-      var sortBy = (function () {
-        if (!_.isArray($scope.opts.sort)) return 'implicit';
-        else if ($scope.opts.sort[0] === '_score') return 'implicit';
-        else if ($scope.opts.sort[0] === $scope.indexPattern.timeFieldName) return 'time';
-        else return 'non-time';
-      }());
-
-      var sortFn = null;
-      if (sortBy !== 'implicit') {
-        sortFn = new HitSortFn($scope.opts.sort[1]);
-      }
-
-      if ($scope.opts.sort[0] === '_score') segmented.setMaxSegments(1);
-      segmented.setDirection(sortBy === 'time' ? ($scope.opts.sort[1] || 'desc') : 'desc');
-      segmented.setSortFn(sortFn);
-      segmented.setSize($scope.opts.size);
-
-      // triggered when the status updated
-      segmented.on('status', function (status) {
-        $scope.fetchStatus = status;
-      });
-
-      segmented.on('segment', notify.timed('handle each segment', function (segmentResp) {
-        if (segmentResp._shards.failed > 0) {
-          $scope.failures = _.union($scope.failures, segmentResp._shards.failures);
-          $scope.failures = _.uniq($scope.failures, false, function (failure) {
-            return failure.index + failure.shard + failure.reason;
-          });
-        }
-      }));
-
-      segmented.on('mergedSegment', function (resp) {
-        $scope.hits = resp.hits.total;
-        $scope.gravities = [];
-
-        var rows = resp.hits.hits.slice();
-        for(var i = 0; i < rows.length; i++) {
-          var hit = rows[i];
-          var gravity = gravityHelper.elasticHitToGravity(hit);
-          $scope.gravities.push(gravity);
-        }
-      });
-
-      segmented.on('complete', function () {
-        if ($scope.fetchStatus.hitCount === 0) {
-          flushResponseData();
+    if($scope.currentView == "dashboard") {
+      $scope.searchSource.onBeginSegmentedFetch(function (segmented) {
+        function flushResponseData() {
+          $scope.hits = 0;
+          $scope.gravities = [];
         }
 
-        $scope.fetchStatus = null;
-      });
-    }).catch(notify.fatal);
+        /**
+         * opts:
+         *   "time" - sorted by the timefield
+         *   "non-time" - explicitly sorted by a non-time field, NOT THE SAME AS `sortBy !== "time"`
+         *   "implicit" - no sorting set, NOT THE SAME AS "non-time"
+         *
+         * @type {String}
+         */
+        var sortBy = (function () {
+          if (!_.isArray($scope.opts.sort)) return 'implicit';
+          else if ($scope.opts.sort[0] === '_score') return 'implicit';
+          else if ($scope.opts.sort[0] === $scope.indexPattern.timeFieldName) return 'time';
+          else return 'non-time';
+        }());
 
+        var sortFn = null;
+        if (sortBy !== 'implicit') {
+          sortFn = new HitSortFn($scope.opts.sort[1]);
+        }
+
+        if ($scope.opts.sort[0] === '_score') segmented.setMaxSegments(1);
+        segmented.setDirection(sortBy === 'time' ? ($scope.opts.sort[1] || 'desc') : 'desc');
+        segmented.setSortFn(sortFn);
+        segmented.setSize($scope.opts.size);
+
+        // triggered when the status updated
+        segmented.on('status', function (status) {
+          $scope.fetchStatus = status;
+        });
+
+        segmented.on('segment', notify.timed('handle each segment', function (segmentResp) {
+          if (segmentResp._shards.failed > 0) {
+            $scope.failures = _.union($scope.failures, segmentResp._shards.failures);
+            $scope.failures = _.uniq($scope.failures, false, function (failure) {
+              return failure.index + failure.shard + failure.reason;
+            });
+          }
+        }));
+
+        segmented.on('mergedSegment', function (resp) {
+          $scope.hits = resp.hits.total;
+          $scope.gravities = [];
+
+          var rows = resp.hits.hits.slice();
+          for (var i = 0; i < rows.length; i++) {
+            var hit = rows[i];
+            var gravity = gravityHelper.elasticHitToGravity(hit);
+            $scope.gravities.push(gravity);
+          }
+        });
+
+        segmented.on('complete', function () {
+          if ($scope.fetchStatus.hitCount === 0) {
+            flushResponseData();
+          }
+
+          $scope.fetchStatus = null;
+        });
+      }).catch(notify.fatal);
+    }
+    
   });
 });
