@@ -66,15 +66,6 @@ define(function (require) {
       });
 
       var init = _.once(function () {
-        var showTotal = 5;
-        $scope.failuresShown = showTotal;
-        $scope.showAllFailures = function () {
-          $scope.failuresShown = $scope.failures.length;
-        };
-        $scope.showLessFailures = function () {
-          $scope.failuresShown = showTotal;
-        };
-
         $scope.updateDataSource()
             .then(function () {
               $scope.$listen(timefilter, 'fetch', function () {
@@ -116,19 +107,6 @@ define(function (require) {
                 $scope.fetch();
               });
 
-              $scope.$watch('vis.aggs', function () {
-                // no timefield, no vis, nothing to update
-                if (!$scope.opts.timefield) return;
-
-                var buckets = $scope.vis.aggs.bySchemaGroup.buckets;
-
-                if (buckets && buckets.length === 1) {
-                  $scope.intervalName = 'by ' + buckets[0].buckets.getInterval().description;
-                } else {
-                  $scope.intervalName = 'auto';
-                }
-              });
-
               $scope.searchSource.onError(function (err) {
                 notify.error(err);
               }).catch(notify.fatal);
@@ -141,11 +119,9 @@ define(function (require) {
             });
       });
 
-      $scope.opts.fetch = $scope.fetch = function () {
+      $scope.fetch = function () {
         // ignore requests to fetch before the app inits
         if (!init.complete) return;
-
-        $scope.updateTime();
 
         $scope.updateDataSource()
             .then(function () {
@@ -219,13 +195,6 @@ define(function (require) {
           $scope.fetchStatus = null;
         });
       }).catch(notify.fatal);
-
-      $scope.updateTime = function () {
-        $scope.timeRange = {
-          from: dateMath.parse(timefilter.time.from),
-          to: dateMath.parse(timefilter.time.to, true)
-        };
-      };
 
       init();
     });
