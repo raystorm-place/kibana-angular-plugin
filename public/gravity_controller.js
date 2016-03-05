@@ -20,7 +20,7 @@ define(function (require) {
       return gravity;
     };
   }]);
-  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, $route, courier, Private, Promise, Notifier,
+  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, courier, Private, Promise, Notifier,
                                                          gravityHelper, savedSearches, timefilter, AppState) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
     var notify = new Notifier({location: 'Gravity Widget'});
@@ -38,8 +38,6 @@ define(function (require) {
 
     $scope.hits = 0;
     $scope.gravities = [];
-    $scope.route = $route;
-    $scope.currentView =  $route.current.locals.dash != null ? "dashboard" : "edit";
     $scope.indexPattern = $scope.vis.indexPattern;
     $scope.state = new AppState();
     $scope.state.index = $scope.indexPattern.id;
@@ -47,11 +45,7 @@ define(function (require) {
     savedSearches.get($scope.state.index).then(function (savedSearch) {
       $scope.searchSource = savedSearch.searchSource;
 
-      $scope.searchSource.set('index', $scope.indexPattern);
       $scope.opts = {
-        index: $scope.indexPattern.id,
-        query: $scope.searchSource.get('query') || '',
-        filters: _.cloneDeep($scope.searchSource.getOwn('filter')),
         sort: getSort.array(["time", "desc"], $scope.indexPattern),
         size: 10,
         timefield: $scope.indexPattern.timeFieldName
@@ -59,10 +53,11 @@ define(function (require) {
 
       $scope.updateDataSource = Promise.method(function () {
         $scope.searchSource
-            .size($scope.opts.size)
-            .sort(getSort($scope.state.sort, $scope.indexPattern))
+            .set('index', $scope.indexPattern)
             .query(!$scope.state.query ? null : $scope.state.query)
-            .set('filter', queryFilter.getFilters());
+            .set('filter', queryFilter.getFilters())
+            .sort(getSort($scope.state.sort, $scope.indexPattern))
+            .size($scope.opts.size);
       });
 
       var init = _.once(function () {
