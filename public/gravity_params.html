@@ -2,5 +2,7 @@
   <div>
     <label>HTML</label>
   </div>
-  <textarea ng-model="vis.params.html" class="form-control" rows="20"></textarea>
+  <div ng-controller="KbnGravityEditController">
+    <div ui-ace="{theme: 'monokai', mode: 'html', onLoad: aceLoaded }" class="html-gravity-editor" ng-model="vis.params.html"></div>
+  </div>
 </div>

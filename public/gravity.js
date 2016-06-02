@@ -1,5 +1,8 @@
 define(function (require) {
-  // we need to load the css ourselves
+  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/ace.js');
+  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/mode-html.js');
+  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/theme-monokai.js');
+  require('plugins/kibana-gravity/bower_components/angular-ui-ace/ui-ace.min.js');
   require('plugins/kibana-gravity/gravity.less');
 
   // we also need to load the controller and used by the template

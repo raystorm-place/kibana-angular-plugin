@@ -4,6 +4,8 @@ Gravity Widget Plugin for Kibana.
 # Install
 
 ```bash
+cd ./kibana-gravity
+bower install
 cp -R ./kibana-gravity kibana/src/plugins/
 ```
 

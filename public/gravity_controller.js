@@ -5,7 +5,7 @@ define(function (require) {
 
   require('ui/notify');
 
-  var module = require('ui/modules').get('kibana/kibana-gravity', ['kibana']);
+  var module = require('ui/modules').get('kibana/kibana-gravity', ['kibana', 'ui.ace']);
   module.service('gravityHelper', [function () {
     this.elasticHitToGravity = function(hit) {
       var gravity = {
@@ -20,6 +20,13 @@ define(function (require) {
       return gravity;
     };
   }]);
+
+  module.controller('KbnGravityEditController', ['$scope', function($scope) {
+    $scope.aceLoaded = function(_editor){
+      _editor.$blockScrolling = Infinity;
+    };
+  }]);
+
   module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, courier, Private, Promise, Notifier,
                                                          gravityHelper, savedSearches, timefilter, AppState) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));

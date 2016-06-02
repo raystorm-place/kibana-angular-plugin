@@ -1,0 +1,28 @@
+{
+  "name": "kibana-gravity",
+  "description": "Kibana Gravity Plugin Widget",
+  "main": "index.js",
+  "authors": [
+    "Marius Kolkowski <marius.kolkowski@raystorm.place>"
+  ],
+  "license": "Apache 2.0",
+  "keywords": [
+    "kibana",
+    "gravity",
+    "plugin",
+    "widget",
+    "raystorm"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ace-builds": "1.2.3",
+    "angular-ui-ace": "0.2.3"
+  }
+}
