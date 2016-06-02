@@ -125,7 +125,7 @@ define(function (require) {
           });
         }).catch(notify.fatal);
         return searchSource;
-      });
+      }).catch(notify.error);
     });
 
     $scope.updateSearchSource = Promise.method(function () {
