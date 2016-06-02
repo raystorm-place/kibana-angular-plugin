@@ -1,6 +1,6 @@
 {
   "name": "kibana-angular-plugin",
-  "description": "Kibana Gravity Plugin Widget",
+  "description": "Kibana Angular Plugin Widget",
   "main": "index.js",
   "authors": [
     "Marius Kolkowski <marius.kolkowski@raystorm.place>"
@@ -8,7 +8,7 @@
   "license": "Apache 2.0",
   "keywords": [
     "kibana",
-    "gravity",
+    "angular",
     "plugin",
     "widget",
     "raystorm"

@@ -1,0 +1,8 @@
+<div class="angular-vis-options form-group" ng-init="$parent.sidebar.section='options'">
+  <div>
+    <label>HTML</label>
+  </div>
+  <div ng-controller="KbnAngularEditController">
+    <div ui-ace="{theme: 'monokai', mode: 'html', onLoad: aceLoaded }" class="html-angular-editor" ng-model="vis.params.html"></div>
+  </div>
+</div>

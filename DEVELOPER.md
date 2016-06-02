@@ -4,7 +4,7 @@ Clear plugin cache, redeploy and restart
 ```bash
 cd kibana
 rm -rf ./optimize/*
-cp -R ~/tmp/kibana-gravity ./src/plugins/
+cp -R ~/tmp/kibana-angular-plugin ./src/plugins/
 bin/kibana
 ```
 

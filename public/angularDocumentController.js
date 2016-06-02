@@ -6,36 +6,36 @@ define(function (require) {
   require('ui/notify');
 
   var module = require('ui/modules').get('kibana/kibana-angular-plugin', ['kibana', 'ui.ace']);
-  module.service('gravityHelper', [function () {
-    this.elasticHitToGravity = function(hit) {
-      var gravity = {
+  module.service('docHelper', [function () {
+    this.elasticHitToDoc = function(hit) {
+      var doc = {
         id: hit["_id"],
         fields: {}
       };
 
       Object.keys(hit._source).forEach(function (field) {
-        gravity.fields[field] = hit["_source"][field];
+        doc.fields[field] = hit["_source"][field];
       });
 
-      return gravity;
+      return doc;
     };
   }]);
 
-  module.controller('KbnGravityEditController', ['$scope', function($scope) {
+  module.controller('KbnAngularEditController', ['$scope', function($scope) {
     $scope.aceLoaded = function(_editor){
       _editor.$blockScrolling = Infinity;
     };
   }]);
 
-  module.controller('KbnGravityVisController', function ($scope, $compile, $interpolate, $sce, courier, Private, Promise, Notifier,
-                                                         gravityHelper, savedSearches, timefilter, AppState) {
+  module.controller('KbnAngularVisController', function ($scope, $compile, $interpolate, $sce, courier, Private, Promise, Notifier,
+                                                         docHelper, savedSearches, timefilter, AppState) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
-    var notify = new Notifier({location: 'Gravity Widget'});
+    var notify = new Notifier({location: 'Angular Widget'});
     var queryFilter = Private(require('ui/filter_bar/query_filter'));
 
-    $scope.html = '<img src="{{gravity.fields.image}}" width="120" /> {{gravity.id}}';
-    $scope.renderTemplate = function(gravity) {
-      var html = $interpolate($scope.html)({gravity: gravity});
+    $scope.html = '<img src="{{doc.fields.image}}" width="120" /> {{doc.id}}';
+    $scope.renderTemplate = function(doc) {
+      var html = $interpolate($scope.html)({doc: doc});
       return $sce.trustAsHtml(html);
     };
     $scope.$watch('vis.params.html', function (html) {
@@ -44,7 +44,7 @@ define(function (require) {
     });
 
     $scope.hits = 0;
-    $scope.gravities = [];
+    $scope.docs = [];
     $scope.indexPattern = $scope.vis.indexPattern;
     $scope.state = new AppState();
     $scope.state.index = $scope.indexPattern.id;
@@ -62,7 +62,7 @@ define(function (require) {
         searchSource.onBeginSegmentedFetch(function (segmented) {
           function flushResponseData() {
             $scope.hits = 0;
-            $scope.gravities = [];
+            $scope.docs = [];
           }
 
           /**
@@ -106,13 +106,13 @@ define(function (require) {
 
           segmented.on('mergedSegment', function (resp) {
             $scope.hits = resp.hits.total;
-            $scope.gravities = [];
+            $scope.docs = [];
 
             var rows = resp.hits.hits.slice();
             for (var i = 0; i < rows.length; i++) {
               var hit = rows[i];
-              var gravity = gravityHelper.elasticHitToGravity(hit);
-              $scope.gravities.push(gravity);
+              var doc = docHelper.elasticHitToDoc(hit);
+              $scope.docs.push(doc);
             }
           });
 
