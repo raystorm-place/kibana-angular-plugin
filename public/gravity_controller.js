@@ -5,7 +5,7 @@ define(function (require) {
 
   require('ui/notify');
 
-  var module = require('ui/modules').get('kibana/kibana-gravity', ['kibana', 'ui.ace']);
+  var module = require('ui/modules').get('kibana/kibana-angular-plugin', ['kibana', 'ui.ace']);
   module.service('gravityHelper', [function () {
     this.elasticHitToGravity = function(hit) {
       var gravity = {

@@ -1,5 +1,5 @@
 {
-  "name": "kibana-gravity",
+  "name": "kibana-angular-plugin",
   "description": "Kibana Gravity Plugin Widget",
   "main": "index.js",
   "authors": [

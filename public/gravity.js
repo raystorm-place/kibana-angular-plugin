@@ -1,12 +1,12 @@
 define(function (require) {
-  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/ace.js');
-  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/mode-html.js');
-  require('plugins/kibana-gravity/bower_components/ace-builds/src-min-noconflict/theme-monokai.js');
-  require('plugins/kibana-gravity/bower_components/angular-ui-ace/ui-ace.min.js');
-  require('plugins/kibana-gravity/gravity.less');
+  require('plugins/kibana-angular-plugin/bower_components/ace-builds/src-min-noconflict/ace.js');
+  require('plugins/kibana-angular-plugin/bower_components/ace-builds/src-min-noconflict/mode-html.js');
+  require('plugins/kibana-angular-plugin/bower_components/ace-builds/src-min-noconflict/theme-monokai.js');
+  require('plugins/kibana-angular-plugin/bower_components/angular-ui-ace/ui-ace.min.js');
+  require('plugins/kibana-angular-plugin/gravity.less');
 
   // we also need to load the controller and used by the template
-  require('plugins/kibana-gravity/gravity_controller');
+  require('plugins/kibana-angular-plugin/gravity_controller');
 
   // register the provider with the visTypes registry so that other know it exists
   require('ui/registry/vis_types').register(GravityVisProvider);
@@ -21,9 +21,9 @@ define(function (require) {
       title: 'Gravity widget',
       icon: 'fa-table',
       description: 'Useful for displaying gravity resulsts in dashboards.',
-      template: require('plugins/kibana-gravity/gravity.html'),
+      template: require('plugins/kibana-angular-plugin/gravity.html'),
       params: {
-        editor: require('plugins/kibana-gravity/gravity_params.html')
+        editor: require('plugins/kibana-angular-plugin/gravity_params.html')
       }
     });
   }

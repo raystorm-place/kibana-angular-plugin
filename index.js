@@ -5,7 +5,7 @@ module.exports = function (kibana) {
   return new kibana.Plugin({
 
     uiExports: {
-      visTypes: ['plugins/kibana-gravity/gravity']
+      visTypes: ['plugins/kibana-angular-plugin/gravity']
     }
 
   });
