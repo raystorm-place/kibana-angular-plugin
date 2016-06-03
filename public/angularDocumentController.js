@@ -34,14 +34,13 @@ define(function (require) {
     var queryFilter = Private(require('ui/filter_bar/query_filter'));
     var rootSearchSource = require('ui/courier/data_source/_root_search_source');
 
-    $scope.html = '<img src="{{doc.fields.image}}" width="120" /> {{doc.id}}';
+    $scope.html = "";
     $scope.renderTemplate = function(doc) {
       var html = $interpolate($scope.html)({doc: doc});
       return $sce.trustAsHtml(html);
     };
     $scope.$watch('vis.params.html', function (html) {
-      if (!html) return;
-      $scope.html = html;
+      $scope.html = !html ? "" : html;
     });
 
     $scope.hits = 0;

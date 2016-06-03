@@ -12,16 +12,14 @@ bin/kibana plugin -i kibana-angular-plugin -u https://github.com/raystorm-place/
 
 Render docs with angular
 ```html
-<div class="panel-heading" id="doc-{{$index}}">
-	<div class="row">
-		<div class="col-md-3">
-			<img src="{{doc.fields.image}}" class="img-responsive" alt="thumbnail" />
-		</div>
-		<div class="col-md-7">
-			<a href="{{doc.fields.url}}" class="panel-title" style="color: #298fa3">
-				{{doc.fields.title}}
-			</a>
-		</div>
+<div class="row">
+	<div class="col-md-3">
+		<img src="{{doc.fields.image}}" class="img-responsive" alt="thumbnail" />
+	</div>
+	<div class="col-md-7">
+		<a href="{{doc.fields.url}}" class="panel-title" style="color: #298fa3">
+			{{doc.fields.title}}
+		</a>
 	</div>
 </div>
 ```

@@ -5,4 +5,22 @@
   <div ng-controller="KbnAngularEditController">
     <div ui-ace="{theme: 'monokai', mode: 'html', onLoad: aceLoaded }" class="html-angular-editor" ng-model="vis.params.html"></div>
   </div>
+  <p></p>
+  <div>
+    <label>Example</label>
+  </div>
+  <div>
+	<pre ng-non-bindable>
+&lt;div class=&quot;row&quot;&gt;
+	&lt;div class=&quot;col-md-3&quot;&gt;
+		&lt;img src=&quot;{{doc.fields.image}}&quot; class=&quot;img-responsive&quot; alt=&quot;thumbnail&quot; /&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;col-md-7&quot;&gt;
+		&lt;a href=&quot;{{doc.fields.url}}&quot; class=&quot;panel-title&quot; style=&quot;color: #298fa3&quot;&gt;
+			{{doc.fields.title}}
+		&lt;/a&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+	</pre>
+  </div>
 </div>
