@@ -12,7 +12,7 @@ define(function (require) {
     return new TemplateVisType({
       name: 'angularDocument',
       title: 'Angular Widget',
-      icon: 'fa-table',
+      icon: 'fa-html5',
       description: 'Display documents with AngularJS in dashboards.',
       template: require('plugins/kibana-angular-plugin/angularDocument.html'),
       params: {

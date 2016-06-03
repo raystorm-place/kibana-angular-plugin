@@ -1,5 +1,6 @@
 # Kibana Angular
 Display documents in angular syntax with the Angular Widget Plugin for Kibana.
+Bootstrap 3 is supported.
 
 # Install
 
@@ -11,14 +12,14 @@ bin/kibana plugin -i kibana-angular-plugin -u https://github.com/raystorm-place/
 
 Render docs with angular
 ```html
-<div class="panel-heading gravity" role="tab" id="gravity-edit-heading-{{$index}}">
+<div class="panel-heading" id="doc-{{$index}}">
 	<div class="row">
-		<div class="col-md-7">
+		<div class="col-md-3">
 			<img src="{{doc.fields.image}}" class="img-responsive" alt="thumbnail" />
 		</div>
-		<div ng-class="{true:'col-md-9 col-xs-7', false:'col-md-12 col-xs-9'}[doc.fields.image!=null]">
-			<a role="button">
-				<h4 class="panel-title">{{doc.fields.title}}</h4>
+		<div class="col-md-7">
+			<a href="{{doc.fields.url}}" class="panel-title" style="color: #298fa3">
+				{{doc.fields.title}}
 			</a>
 		</div>
 	</div>
