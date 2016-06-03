@@ -35,14 +35,6 @@ define(function (require) {
     var rootSearchSource = require('ui/courier/data_source/_root_search_source');
 
     $scope.html = "";
-    $scope.renderTemplate = function(doc) {
-      var html = $interpolate($scope.html)({doc: doc});
-      return $sce.trustAsHtml(html);
-    };
-    $scope.$watch('vis.params.html', function (html) {
-      $scope.html = !html ? "" : html;
-    });
-
     $scope.hits = 0;
     $scope.docs = [];
     $scope.indexPattern = $scope.vis.indexPattern;
@@ -54,6 +46,20 @@ define(function (require) {
       sort: getSort.array(["time", "desc"], $scope.indexPattern),
       size: 10,
       timefield: $scope.indexPattern.timeFieldName
+    };
+
+    $scope.$watch('vis.params.num', function (num) {
+      if(num) {
+        $scope.opts.size = num;
+      }
+    });
+    $scope.$watch('vis.params.html', function (html) {
+      $scope.html = !html ? "" : html;
+    });
+
+    $scope.renderTemplate = function(doc) {
+      var html = $interpolate($scope.html)({doc: doc});
+      return $sce.trustAsHtml(html);
     };
 
     $scope.getSearchSource = Promise.method(function () {

@@ -1,4 +1,8 @@
 <div class="angular-vis-options form-group" ng-init="$parent.sidebar.section='options'">
+  <div class="form-group">
+    <label>Num</label>
+    <input type="number" min="0" max="1000" name="num" class="form-control" ng-model="vis.params.num">
+  </div>
   <div>
     <label>HTML</label>
   </div>
@@ -20,7 +24,6 @@
 			{{doc.fields.title}}
 		&lt;/a&gt;
 	&lt;/div&gt;
-&lt;/div&gt;
-	</pre>
+&lt;/div&gt;</pre>
   </div>
 </div>
