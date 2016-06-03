@@ -32,6 +32,7 @@ define(function (require) {
     var HitSortFn = Private(require('plugins/kibana/discover/_hit_sort_fn'));
     var notify = new Notifier({location: 'Angular Widget'});
     var queryFilter = Private(require('ui/filter_bar/query_filter'));
+    var rootSearchSource = require('ui/courier/data_source/_root_search_source');
 
     $scope.html = '<img src="{{doc.fields.image}}" width="120" /> {{doc.id}}';
     $scope.renderTemplate = function(doc) {
@@ -57,76 +58,84 @@ define(function (require) {
     };
 
     $scope.getSearchSource = Promise.method(function () {
-      return savedSearches.get($scope.state.index).then(function (savedSearch) {
-        var searchSource = savedSearch.searchSource;
-        searchSource.onBeginSegmentedFetch(function (segmented) {
-          function flushResponseData() {
-            $scope.hits = 0;
-            $scope.docs = [];
-          }
-
-          /**
-           * opts:
-           *   "time" - sorted by the timefield
-           *   "non-time" - explicitly sorted by a non-time field, NOT THE SAME AS `sortBy !== "time"`
-           *   "implicit" - no sorting set, NOT THE SAME AS "non-time"
-           *
-           * @type {String}
-           */
-          var sortBy = (function () {
-            if (!_.isArray($scope.opts.sort)) return 'implicit';
-            else if ($scope.opts.sort[0] === '_score') return 'implicit';
-            else if ($scope.opts.sort[0] === $scope.indexPattern.timeFieldName) return 'time';
-            else return 'non-time';
-          }());
-
-          var sortFn = null;
-          if (sortBy !== 'implicit') {
-            sortFn = new HitSortFn($scope.opts.sort[1]);
-          }
-
-          if ($scope.opts.sort[0] === '_score') segmented.setMaxSegments(1);
-          segmented.setDirection(sortBy === 'time' ? ($scope.opts.sort[1] || 'desc') : 'desc');
-          segmented.setSortFn(sortFn);
-          segmented.setSize($scope.opts.size);
-
-          // triggered when the status updated
-          segmented.on('status', function (status) {
-            $scope.fetchStatus = status;
+      return savedSearches.get($scope.state.index)
+          .then(function (savedSearch) {
+            var searchSource = savedSearch.searchSource;
+            return $scope.initSearchSource(searchSource);
+          }).catch(function(e){
+            var searchSource = Private(rootSearchSource).get();
+            return $scope.initSearchSource(searchSource);
           });
-
-          segmented.on('segment', notify.timed('handle each segment', function (segmentResp) {
-            if (segmentResp._shards.failed > 0) {
-              $scope.failures = _.union($scope.failures, segmentResp._shards.failures);
-              $scope.failures = _.uniq($scope.failures, false, function (failure) {
-                return failure.index + failure.shard + failure.reason;
-              });
-            }
-          }));
-
-          segmented.on('mergedSegment', function (resp) {
-            $scope.hits = resp.hits.total;
-            $scope.docs = [];
-
-            var rows = resp.hits.hits.slice();
-            for (var i = 0; i < rows.length; i++) {
-              var hit = rows[i];
-              var doc = docHelper.elasticHitToDoc(hit);
-              $scope.docs.push(doc);
-            }
-          });
-
-          segmented.on('complete', function () {
-            if ($scope.fetchStatus.hitCount === 0) {
-              flushResponseData();
-            }
-
-            $scope.fetchStatus = null;
-          });
-        }).catch(notify.fatal);
-        return searchSource;
-      }).catch(notify.error);
     });
+
+    $scope.initSearchSource = function (searchSource) {
+      searchSource.onBeginSegmentedFetch(function (segmented) {
+        function flushResponseData() {
+          $scope.hits = 0;
+          $scope.docs = [];
+        }
+
+        /**
+         * opts:
+         *   "time" - sorted by the timefield
+         *   "non-time" - explicitly sorted by a non-time field, NOT THE SAME AS `sortBy !== "time"`
+         *   "implicit" - no sorting set, NOT THE SAME AS "non-time"
+         *
+         * @type {String}
+         */
+        var sortBy = (function () {
+          if (!_.isArray($scope.opts.sort)) return 'implicit';
+          else if ($scope.opts.sort[0] === '_score') return 'implicit';
+          else if ($scope.opts.sort[0] === $scope.indexPattern.timeFieldName) return 'time';
+          else return 'non-time';
+        }());
+
+        var sortFn = null;
+        if (sortBy !== 'implicit') {
+          sortFn = new HitSortFn($scope.opts.sort[1]);
+        }
+
+        if ($scope.opts.sort[0] === '_score') segmented.setMaxSegments(1);
+        segmented.setDirection(sortBy === 'time' ? ($scope.opts.sort[1] || 'desc') : 'desc');
+        segmented.setSortFn(sortFn);
+        segmented.setSize($scope.opts.size);
+
+        // triggered when the status updated
+        segmented.on('status', function (status) {
+          $scope.fetchStatus = status;
+        });
+
+        segmented.on('segment', notify.timed('handle each segment', function (segmentResp) {
+          if (segmentResp._shards.failed > 0) {
+            $scope.failures = _.union($scope.failures, segmentResp._shards.failures);
+            $scope.failures = _.uniq($scope.failures, false, function (failure) {
+              return failure.index + failure.shard + failure.reason;
+            });
+          }
+        }));
+
+        segmented.on('mergedSegment', function (resp) {
+          $scope.hits = resp.hits.total;
+          $scope.docs = [];
+
+          var rows = resp.hits.hits.slice();
+          for (var i = 0; i < rows.length; i++) {
+            var hit = rows[i];
+            var doc = docHelper.elasticHitToDoc(hit);
+            $scope.docs.push(doc);
+          }
+        });
+
+        segmented.on('complete', function () {
+          if ($scope.fetchStatus.hitCount === 0) {
+            flushResponseData();
+          }
+
+          $scope.fetchStatus = null;
+        });
+      }).catch(notify.fatal);
+      return searchSource;
+    };
 
     $scope.updateSearchSource = Promise.method(function () {
       $scope.searchSource
