@@ -51,6 +51,7 @@ define(function (require) {
     $scope.$watch('vis.params.num', function (num) {
       if(num) {
         $scope.opts.size = num;
+        $scope.fetch(); // update datasource
       }
     });
     $scope.$watch('vis.params.html', function (html) {
