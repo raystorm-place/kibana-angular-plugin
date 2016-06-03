@@ -2,6 +2,10 @@
 Display documents in angular syntax with the Angular Widget Plugin for Kibana.
 Bootstrap 3 is supported.
 
+![preview-create](/resources/preview-create.png)
+
+![preview-edit](/resources/preview-edit.png)
+
 # Install
 
 ```bash
